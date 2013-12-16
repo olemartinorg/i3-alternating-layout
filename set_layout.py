@@ -28,9 +28,11 @@ if __name__ == "__main__":
     for win in current_win:
         parent = find_parent(win['id'])
 
-        if parent and "last_split_layout" in parent:
-            layout = parent['last_split_layout']
-            if layout == 'splith':
+        if parent and "rect" in parent:
+            height = parent['rect']['height']
+            width = parent['rect']['width']
+
+            if height > width:
                 new_layout = 'vertical'
             else:
                 new_layout = 'horizontal'
