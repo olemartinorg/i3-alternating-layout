@@ -13,7 +13,7 @@ git clone https://github.com/olemartinorg/i3-alternating-layout
 ```
 And add ```alternating_layouts.sh``` to your ```~/.i3/config``` autostart:
 ```
-exec --no-startup-id /path/to/alternating_layouts.sh
+exec --no-startup-id /path/to/alternating_layouts.py
 ```
 
 Screenshot

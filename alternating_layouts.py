@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import i3
+import re
+import subprocess
 
 
 def find_parent(window_id):
@@ -23,7 +25,13 @@ def find_parent(window_id):
     finder(root_window['nodes'])
     return result[0]
 
-if __name__ == "__main__":
+
+def set_layout():
+    """
+        Set the layout/split for the currently
+        focused window to either vertical or
+        horizontal, depending on its width/height
+    """
     current_win = i3.filter(nodes=[], focused=True)
     for win in current_win:
         parent = find_parent(win['id'])
@@ -38,3 +46,24 @@ if __name__ == "__main__":
                 new_layout = 'horizontal'
 
             i3.split(new_layout)
+
+
+def main():
+    """
+        Main function - listen for window focus
+        changes and call set_layout when focus
+        changes
+    """
+    process = subprocess.Popen(
+        ['xprop', '-root', '-spy'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    regex = re.compile(r'^_NET_CLIENT_LIST_STACKING|^_NET_ACTIVE_WINDOW')
+    while True:
+        line = process.stdout.readline()
+        if regex.match(line):
+            set_layout()
+
+if __name__ == "__main__":
+    main()
