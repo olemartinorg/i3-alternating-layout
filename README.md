@@ -7,7 +7,8 @@ Installation
 ---------------
 
 ```
-pip install i3-py
+sudo apt-get install x11-utils # To install xprop
+sudo pip install i3-py
 git clone https://github.com/olemartinorg/i3-alternating-layout
 ```
 And add ```alternating_layouts.sh``` to your ```~/.i3/config``` autostart:
