@@ -11,7 +11,7 @@ sudo apt-get install x11-utils python-pip git
 sudo pip install i3-py
 git clone https://github.com/olemartinorg/i3-alternating-layout
 ```
-And add ```alternating_layouts.sh``` to your ```~/.i3/config``` autostart:
+And add ```alternating_layouts.py``` to your ```~/.i3/config``` autostart:
 ```
 exec --no-startup-id /path/to/alternating_layouts.py
 ```
