@@ -59,7 +59,7 @@ def main():
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
-    regex = re.compile(r'^_NET_CLIENT_LIST_STACKING|^_NET_ACTIVE_WINDOW')
+    regex = re.compile(b'^_NET_CLIENT_LIST_STACKING|^_NET_ACTIVE_WINDOW')
     while True:
         line = process.stdout.readline()
         if regex.match(line):
