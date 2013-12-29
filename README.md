@@ -6,6 +6,7 @@ Scripts to open new windows in i3wm using alternating layouts (splith/splitv) fo
 Installation
 ------------
 
+### Debian/Ubuntu
 ```
 sudo apt-get install x11-utils python-pip git
 sudo pip install i3-py
@@ -15,6 +16,12 @@ And add ```alternating_layouts.py``` to your ```~/.i3/config``` autostart:
 ```
 exec --no-startup-id /path/to/alternating_layouts.py
 ```
+
+### Arch Linux
+Install [xorg-utils](https://www.archlinux.org/packages/extra/any/xorg-utils/) from the official repos and [python2-i3-git](https://aur.archlinux.org/packages/python2-i3-git) from the AUR.
+
+Then add `exec --no-startup-id python2 /path/to/alternating_layouts.py` to your `~/.i3/config`.
+
 
 Screenshot
 ----------
