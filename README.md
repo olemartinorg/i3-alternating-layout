@@ -5,6 +5,7 @@ Scripts to open new windows in i3wm using alternating layouts (splith/splitv) fo
 
 Installation
 ------------
+### Ubuntu
 
 ```
 sudo apt-get install x11-utils python-pip git
