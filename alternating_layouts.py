@@ -3,7 +3,7 @@
 import i3
 import re
 import subprocess
-
+import os
 
 def find_parent(window_id):
     """
@@ -46,7 +46,35 @@ def set_layout():
                 new_layout = 'horizontal'
 
             i3.split(new_layout)
+            
+def toggle_execution():
+    """
+        If another instance of this script is running,
+        exit and terminate all other instances,
+        so that the execution of this program acts as a toggle for i.tg
+        This way, this script can be keysym-ed directly and the same
+        key be used for turning off and on the alternating layout.
+        We use a signaling file in /tmp to indicate that another instance is running.
+    """
+    self_name = os.path.basename(__file__)
+    pidfile_dir = "/tmp/" + self_name + ".lock"
 
+    if os.path.isfile(pidfile_dir): # indicator file exists: other instance running
+
+        try:
+            pid = eval(open(pidfile_dir).readline()) # get first line from the file; onl$
+            os.kill(pid, 15) # signal 15 is SIGTERM
+
+        except (SyntaxError, OSError): # eval fails or kill fails
+            print "Malformed lockfile. Please retry running this."
+
+        os.remove(pidfile_dir) # remove the file before exiting
+        exit(1)
+
+    else: # indicator file doesn't exist: no other instance
+        pidfile = open(pidfile_dir, "w") # create the file
+        pidfile.write(str(os.getpid())) # write this PID into it
+        pidfile.close()
 
 def main():
     """
@@ -54,6 +82,9 @@ def main():
         changes and call set_layout when focus
         changes
     """
+
+    toggle_execution()
+
     process = subprocess.Popen(
         ['xprop', '-root', '-spy'],
         stdout=subprocess.PIPE,
