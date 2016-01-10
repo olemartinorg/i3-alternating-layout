@@ -56,6 +56,7 @@ def main():
     """
     process = subprocess.Popen(
         ['xprop', '-root', '-spy'],
+        shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
