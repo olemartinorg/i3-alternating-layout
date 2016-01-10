@@ -56,15 +56,19 @@ def main():
     """
     process = subprocess.Popen(
         ['xprop', '-root', '-spy'],
-        shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
     regex = re.compile(b'^_NET_CLIENT_LIST_STACKING|^_NET_ACTIVE_WINDOW')
+
+    last_line = ""
     while True:
         line = process.stdout.readline()
+        if line == last_line:
+            continue
         if regex.match(line):
             set_layout()
+        last_line = line
 
 if __name__ == "__main__":
     main()
