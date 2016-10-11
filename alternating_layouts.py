@@ -89,11 +89,16 @@ def main():
     last_line = ""
     while True:
         line = process.stdout.readline()
+        if line == b'': #X is dead
+            break
         if line == last_line:
             continue
         if regex.match(line):
             set_layout()
         last_line = line
+
+    process.kill()
+    sys.exit()
 
 if __name__ == "__main__":
     main()
