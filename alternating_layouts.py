@@ -39,7 +39,9 @@ def set_layout():
     for win in current_win:
         parent = find_parent(win['id'])
 
-        if parent and "rect" in parent and parent['layout'] != 'tabbed':
+        if (parent and "rect" in parent
+                   and parent['layout'] != 'tabbed'
+                   and parent['layout'] != 'stacked'):
             height = parent['rect']['height']
             width = parent['rect']['width']
 
@@ -89,11 +91,16 @@ def main():
     last_line = ""
     while True:
         line = process.stdout.readline()
+        if line == b'': #X is dead
+            break
         if line == last_line:
             continue
         if regex.match(line):
             set_layout()
         last_line = line
+
+    process.kill()
+    sys.exit()
 
 if __name__ == "__main__":
     main()
