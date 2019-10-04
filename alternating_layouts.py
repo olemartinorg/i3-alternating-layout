@@ -1,64 +1,97 @@
 #!/usr/bin/env python
 
-import i3
-import re
+import json
 import subprocess
 import getopt
 import sys
 import os
 
 
-def find_parent(window_id):
-    """
-        Find the parent of a given window id
-    """
-    root_window = i3.get_tree()
-    result = [None]
-
-    def finder(n, p=None):
-        if result[0] is not None:
-            return
-        for node in n:
-            if node['id'] == window_id:
-                result[0] = p
-                return
-            if len(node['nodes']):
-                finder(node['nodes'], node)
-
-    finder(root_window['nodes'])
-    return result[0]
-
-
-def set_layout():
+def set_layout(node):
     """
         Set the layout/split for the currently
         focused window to either vertical or
         horizontal, depending on its width/height
     """
-    current_win = i3.filter(nodes=[], focused=True)
-    for win in current_win:
-        parent = find_parent(win['id'])
+    height = node['rect']['height']
+    width = node['rect']['width']
 
-        if (parent and "rect" in parent
-                   and parent['layout'] != 'tabbed'
-                   and parent['layout'] != 'stacked'):
-            height = parent['rect']['height']
-            width = parent['rect']['width']
+    if height > width:
+        sway_set_split(node["id"], "splitv")
+    else:
+        sway_set_split(node["id"], "splith")
 
-            if height > width:
-                new_layout = 'vertical'
+
+def sway_set_split(con_id, split):
+    """
+    Sends the split layout msg to sway
+    """
+    cmd = '[con_id="{}"] {}'.format(con_id, split)
+    process = subprocess.Popen(
+        ['swaymsg', cmd],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    return True
+#
+#
+# def print_help():
+#     print("Usage: " + sys.argv[0] + " [-p path/to/pid.file]")
+#     print("")
+#     print("Options:")
+#     print("    -p path/to/pid.file   Saves the PID for this program in the filename specified")
+#     print("")
+
+
+def get_sway_tree():
+    """
+    returns the sway tree
+    """
+    process = subprocess.Popen(
+        ['swaymsg', '-t', 'get_tree'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    return json.loads(process.stdout.read())
+
+def traverse_sway_tree(json_tree, finder):
+    # First check for root node
+    if isinstance(json_tree, dict) and json_tree.get("id") == 1:
+        return traverse_sway_tree(json_tree["nodes"], finder)
+    else:
+        for subnode in json_tree:
+            ret = finder(subnode)
+            if ret:
+                return ret
             else:
-                new_layout = 'horizontal'
+                if subnode.get("nodes"):
+                    ret = traverse_sway_tree(subnode["nodes"], finder)
+                    if ret:
+                        return ret
+                    else:
+                        continue
+        return False
 
-            i3.split(new_layout)
+def get_focused_node(json_tree):
+    if json_tree.get("focused"):
+        return json_tree
+    else:
+        return False
 
 
-def print_help():
-    print("Usage: " + sys.argv[0] + " [-p path/to/pid.file]")
-    print("")
-    print("Options:")
-    print("    -p path/to/pid.file   Saves the PID for this program in the filename specified")
-    print("")
+def is_focused_id(json_tree):
+    if json_tree.get("focused"):
+        return json_tree["id"]
+    else:
+        return False
+
+
+def switch_layout():
+    process = subprocess.Popen(
+        ['swaymsg', '-t', 'command', '"splitv"'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
 
 
 def main():
@@ -67,40 +100,19 @@ def main():
         changes and call set_layout when focus
         changes
     """
-    opt_list, args = getopt.getopt(sys.argv[1:], 'hp:')
-    pid_file = None
-    for opt in opt_list:
-        if opt[0] == "-h":
-            print_help()
-            sys.exit()
-        if opt[0] == "-p":
-            pid_file = opt[1]
 
-    if pid_file:
-        with open(pid_file, 'w') as f:
-            f.write(str(os.getpid()))
-
-
+    # subscribe to window changes
     process = subprocess.Popen(
-        ['xprop', '-root', '-spy'],
+        ['swaymsg', '-t', 'subscribe', '-m',  '["window"]'],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )
-    regex = re.compile(b'^_NET_CLIENT_LIST_STACKING|^_NET_ACTIVE_WINDOW')
 
-    last_line = ""
-    while True:
-        line = process.stdout.readline()
-        if line == b'': #X is dead
-            break
-        if line == last_line:
-            continue
-        if regex.match(line):
-            set_layout()
-        last_line = line
+    for line in process.stdout:
+        tree = get_sway_tree()
+        focused_node = traverse_sway_tree(tree, get_focused_node)
+        set_layout(focused_node)
 
-    process.kill()
-    sys.exit()
 
 if __name__ == "__main__":
     main()
