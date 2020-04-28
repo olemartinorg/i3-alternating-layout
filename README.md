@@ -17,7 +17,7 @@ And add `alternating_layouts.py` to your `~/.i3/config` autostart:
 exec --no-startup-id /path/to/alternating_layouts.py
 ```
 ### Arch Linux
-Install `python-i3-py` and `xorg-util-macros`, then add
+Install `python-i3-py` and `xorg-xprop`, then add
 ```
 exec --no-startup-id /path/to/alternating_layouts.py
 ```
