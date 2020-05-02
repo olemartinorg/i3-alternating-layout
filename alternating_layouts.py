@@ -35,7 +35,13 @@ def set_layout():
         focused window to either vertical or
         horizontal, depending on its width/height
     """
-    current_win = i3.filter(nodes=[], focused=True)
+    while True:
+        try:
+            current_win = i3.filter(nodes=[], focused=True)
+        except:
+            continue
+        break
+
     for win in current_win:
         parent = find_parent(win['id'])
 
