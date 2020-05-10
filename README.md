@@ -8,7 +8,7 @@ Installation
 ### Ubuntu
 
 ```
-sudo apt-get install x11-utils python-pip3 git
+sudo apt-get install x11-utils python3-pip git
 pip3 install i3-py
 git clone https://github.com/olemartinorg/i3-alternating-layout
 ```
