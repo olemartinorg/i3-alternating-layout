@@ -29,15 +29,13 @@ def set_layout(i3, e):
         focused window to either vertical or
         horizontal, depending on its width/height
     """
-    win = i3.get_tree().find_focused()
+    win = e.container
     parent = find_parent(i3, win.id)
 
     if (parent and parent.layout != 'tabbed'
             and parent.layout != 'stacked'):
-        height = win.rect.height
-        width = win.rect.width
 
-        if height > width:
+        if win.rect.height > win.rect.width:
             i3.command('split v')
         else:
             i3.command('split h')
