@@ -10,21 +10,17 @@ def find_parent(i3, window_id):
     """
         Find the parent of a given window id
     """
-    root_window = i3.get_tree()
-    result = [None]
 
-    def finder(n, p=None):
-        if result[0] is not None:
-            return
-        for node in n:
-            if node.id == window_id:
-                result[0] = p
-                return
-            if len(node.nodes):
-                finder(node.nodes, node)
+    def finder(con, parent):
+        if con.id == window_id:
+            return parent
+        for node in con.nodes:
+            res = finder(node, con)
+            if res:
+                return res
+        return None
 
-    finder(root_window.nodes)
-    return result[0]
+    return finder(i3.get_tree(), None)
 
 
 def set_layout(i3, e):
