@@ -22,7 +22,7 @@ def find_parent(window_id):
             if node['id'] == window_id:
                 result[0] = p
                 return
-            if len(node['nodes']):
+            if node['nodes']:
                 finder(node['nodes'], node)
 
     finder(root_window['nodes'])
@@ -67,7 +67,7 @@ def main():
         changes and call set_layout when focus
         changes
     """
-    opt_list, args = getopt.getopt(sys.argv[1:], 'hp:')
+    opt_list, _ = getopt.getopt(sys.argv[1:], 'hp:')
     pid_file = None
     for opt in opt_list:
         if opt[0] == "-h":
@@ -80,7 +80,6 @@ def main():
         with open(pid_file, 'w') as f:
             f.write(str(os.getpid()))
 
-
     process = subprocess.Popen(
         ['xprop', '-root', '-spy'],
         stdout=subprocess.PIPE,
@@ -91,7 +90,7 @@ def main():
     last_line = ""
     while True:
         line = process.stdout.readline()
-        if line == b'': #X is dead
+        if line == b'':  # X is dead
             break
         if line == last_line:
             continue
@@ -101,6 +100,7 @@ def main():
 
     process.kill()
     sys.exit()
+
 
 if __name__ == "__main__":
     main()
