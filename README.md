@@ -8,8 +8,8 @@ Installation
 ### Ubuntu
 
 ```
-sudo apt-get install x11-utils python3-pip git
-pip3 install i3-py
+sudo apt-get install python3-pip git
+pip3 install i3ipc
 git clone https://github.com/olemartinorg/i3-alternating-layout
 ```
 And add `alternating_layouts.py` to your `~/.i3/config` autostart:
@@ -17,7 +17,7 @@ And add `alternating_layouts.py` to your `~/.i3/config` autostart:
 exec --no-startup-id /path/to/alternating_layouts.py
 ```
 ### Arch Linux
-Install `python-i3-py` and `xorg-xprop`, then add
+Install `python-i3ipc`, then add
 ```
 exec --no-startup-id /path/to/alternating_layouts.py
 ```
