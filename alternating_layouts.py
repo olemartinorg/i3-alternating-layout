@@ -55,7 +55,7 @@ def main():
         changes and call set_layout when focus
         changes
     """
-    opt_list, args = getopt.getopt(sys.argv[1:], 'hp:')
+    opt_list, _ = getopt.getopt(sys.argv[1:], 'hp:')
     pid_file = None
     for opt in opt_list:
         if opt[0] == "-h":
