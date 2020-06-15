@@ -1,56 +1,44 @@
 #!/usr/bin/env python3
 
-import i3
-import re
-import subprocess
 import getopt
 import sys
 import os
+from i3ipc import Connection, Event
 
 
-def find_parent(window_id):
+def find_parent(i3, window_id):
     """
         Find the parent of a given window id
     """
-    root_window = i3.get_tree()
-    result = [None]
 
-    def finder(n, p=None):
-        if result[0] is not None:
-            return
-        for node in n:
-            if node['id'] == window_id:
-                result[0] = p
-                return
-            if len(node['nodes']):
-                finder(node['nodes'], node)
+    def finder(con, parent):
+        if con.id == window_id:
+            return parent
+        for node in con.nodes:
+            res = finder(node, con)
+            if res:
+                return res
+        return None
 
-    finder(root_window['nodes'])
-    return result[0]
+    return finder(i3.get_tree(), None)
 
 
-def set_layout():
+def set_layout(i3, e):
     """
         Set the layout/split for the currently
         focused window to either vertical or
         horizontal, depending on its width/height
     """
-    current_win = i3.filter(nodes=[], focused=True)
-    for win in current_win:
-        parent = find_parent(win['id'])
+    win = e.container
+    parent = find_parent(i3, win.id)
 
-        if (parent and "rect" in parent
-                   and parent['layout'] != 'tabbed'
-                   and parent['layout'] != 'stacked'):
-            height = parent['rect']['height']
-            width = parent['rect']['width']
+    if (parent and parent.layout != 'tabbed'
+            and parent.layout != 'stacked'):
 
-            if height > width:
-                new_layout = 'vertical'
-            else:
-                new_layout = 'horizontal'
-
-            i3.split(new_layout)
+        if win.rect.height > win.rect.width:
+            i3.command('split v')
+        else:
+            i3.command('split h')
 
 
 def print_help():
@@ -63,7 +51,7 @@ def print_help():
 
 def main():
     """
-        Main function - listen for window focus
+    Main function - listen for window focus
         changes and call set_layout when focus
         changes
     """
@@ -80,27 +68,10 @@ def main():
         with open(pid_file, 'w') as f:
             f.write(str(os.getpid()))
 
+    i3 = Connection()
+    i3.on(Event.WINDOW_FOCUS, set_layout)
+    i3.main()
 
-    process = subprocess.Popen(
-        ['xprop', '-root', '-spy'],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
-    regex = re.compile(b'^_NET_CLIENT_LIST_STACKING|^_NET_ACTIVE_WINDOW')
-
-    last_line = ""
-    while True:
-        line = process.stdout.readline()
-        if line == b'': #X is dead
-            break
-        if line == last_line:
-            continue
-        if regex.match(line):
-            set_layout()
-        last_line = line
-
-    process.kill()
-    sys.exit()
 
 if __name__ == "__main__":
     main()
