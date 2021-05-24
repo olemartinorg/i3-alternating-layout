@@ -29,7 +29,7 @@ def set_layout(i3, e):
         focused window to either vertical or
         horizontal, depending on its width/height
     """
-    win = e.container
+    win = i3.get_tree().find_focused()
     parent = find_parent(i3, win.id)
 
     if (parent and parent.layout != 'tabbed'
