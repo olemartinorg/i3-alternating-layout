@@ -36,9 +36,11 @@ def set_layout(i3, e):
             and parent.layout != 'stacked'):
 
         if win.rect.height > win.rect.width:
-            i3.command('split v')
+            if parent.orientation == 'horizontal':
+                i3.command('split v')
         else:
-            i3.command('split h')
+            if parent.orientation == 'vertical'
+                i3.command('split h')
 
 
 def print_help():
