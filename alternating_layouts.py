@@ -39,7 +39,7 @@ def set_layout(i3, e):
             if parent.orientation == 'horizontal':
                 i3.command('split v')
         else:
-            if parent.orientation == 'vertical'
+            if parent.orientation == 'vertical':
                 i3.command('split h')
 
 
