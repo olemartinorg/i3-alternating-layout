@@ -14,7 +14,7 @@ git clone https://github.com/olemartinorg/i3-alternating-layout
 ```
 And add `alternating_layouts.py` to your `~/.i3/config` autostart:
 ```
-exec --no-startup-id /path/to/alternating_layouts.py
+exec_always --no-startup-id /path/to/alternating_layouts.py
 ```
 ### Arch Linux 
 Install `python-i3ipc`, then either:
@@ -23,7 +23,7 @@ Clone this repository or install from the [AUR](https://aur.archlinux.org/packag
 
 Then, for i3 add:
 ```
-exec --no-startup-id /path/to/alternating_layouts.py
+exec_always --no-startup-id /path/to/alternating_layouts.py
 ```
 to your `~/.i3/config`.
 
